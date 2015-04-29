@@ -1,0 +1,698 @@
+<!DOCTYPE html-->
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css" />
+<link rel="stylesheet" href="css/jquery-ui.css" />
+<script src="js/jquery.min.js"></script>
+<script src="js/jquery-ui.js"></script>
+<script src="js/jquery.mobile-1.4.5.min.js"></script>
+<script type="text"/javascript" "charset=utf-8" scr="phonegap.js"></script>
+<title>PASTELERIA LIHERM</title>
+<script type="text/javascript">
+$(document).ready(function inicio(){
+
+  var btnGuardar=$("#guardar");
+  btnGuardar.click(function guardar(){
+  var nom=$("#nombre").val();
+  var app=$("#ap").val();
+  var apm=$("#am").val();
+  var dir=$("#di").val();
+    $.ajax({
+    type:"POST",
+    url:"guardarDatos.php",
+    data:"nombre="+nom+"&apellido_p="+app+"&apellido_m="+apm+"&direccion="+dir,//+"&telefono="+tel,
+    success: registro
+    });
+    function registro(datos){
+    alert(datos);
+    }
+  });
+  
+  var btnConsulta=$("#consultar");//consultar todos los registros
+  btnConsulta.click(function cons(){  
+    $.ajax({
+    type:"POST",
+    //url:"consultaBD.php",
+    url:"http://mobileapp.260mb.net/consultaBD.php",
+    data:"",
+    success: consultaDatos
+    });
+    
+    function consultaDatos(datos){
+    var respDatos=$.parseJSON(datos);   
+    var respuesta=$("#resconsulta");
+    dibujarTabla(respuesta, respDatos);    
+    }
+  });
+    function dibujarTabla(respuesta, respDatos) {
+    respuesta.html("");
+    respuesta.append('<table id="tab" border="1">');
+    var tabla=$("#tab");
+    tabla.html("<tr><th>Id</th><th>Nombre</th><th>Apellido_P</th><th>Apellido_M</th><th>Direccion</th></tr>");
+               //<th>Telefono</th></tr>");
+    for(var i in respDatos){
+      tabla.append("<tr><td>"+respDatos[i].Id_Cliente+"</td>"
+      +"<td>"+respDatos[i].Nombre+"</td>"
+      +"<td>"+respDatos[i].Apellido_P+"</td>"
+      +"<td>"+respDatos[i].Apellido_M+"</td>"
+      +"<td>"+respDatos[i].Direccion+"</td></tr>");
+    }
+    tabla.append("</table>");
+    }
+    
+  var btnconsultar2=$("#btnconsultar2");
+  btnconsultar2.click(function cons2(){
+  var valConsulta=$("#valConsulta").val();
+    $.ajax({
+      type:"POST",
+      url:"http://mobileapp.260mb.net/consultaBD2.php",
+      data:"Id="+valConsulta,
+      success: consultaCliente
+    });
+    
+    function consultaCliente(datos){
+    var respDatos2=$.parseJSON(datos);   
+    var respuesta2=$("#resconsulta2");
+    dibujarTabla(respuesta2, respDatos2);
+    }
+  });
+var btnConsAct=$("#btnConsAct");
+ btnConsAct.click(function cargarDat(){
+   // alert("hola");
+     $.ajax({
+    type:"POST",
+    url:"http://mobileapp.260mb.net/consultaBD.php",
+    data:"",
+    success: cargarDatos
+    });
+     function cargarDatos(datos) {
+        var respCarga=$.parseJSON(datos);
+        var respConAct=$("#respConAct");
+        dibujarTabla(respConAct,respCarga);
+     }
+ });
+ 
+ var btnConsAct=$("#btnConsAct");
+ btnConsAct.click(function cargarDat(){
+  $.ajax({
+    type:"POST",
+    url:"consultaBD.php",
+    data:"",
+    success: cargarDatos
+  });
+  function cargarDatos(datos) {
+    var respCarga=$.parseJSON(datos);
+    var respConAct=$("#respConAct");
+    dibujarTabla(respConAct, respCarga);
+  }
+ });
+ 
+ var btnCarDatos=$("#btnCarDatos");
+ btnCarDatos.click(function cargarInf(){
+   var Id=parseInt($("#nomActualizar").val());//nomActualizar--
+    $.ajax({
+    type:"POST",
+    url:"http://mobileapp.260mb.net/consultaBD2.php",
+    data:"Id="+Id,
+    success: cargarDatosAct
+        });
+    function cargarDatosAct(datos) {
+        var consDatAct=$.parseJSON(datos);
+        var respCargDatos=$("#respCargDatos");//Div del resultado para dibujar control
+        respCargDatos.html("<label>ID:</label><input type='text' id='Id' disabled='yes'>");
+        respCargDatos.append("<label>Nombre:</label><input type='text' id='nom'>");
+        respCargDatos.append("<label>Apellido_P:</label><input type='text' id='app'>");
+        respCargDatos.append("<label>Apellido_M:</label><input type='text' id='apm'>");
+         respCargDatos.append("<label>Direccion:</label><input type='text' id='dir'>");
+          //respCargDatos.append("<label>Telefono:</label><input type='text' id='tel'>");
+        var Id=$("#Id");
+        var nom=$("#nom");
+        var app=$("#app");
+        var apm=$("#apm");
+        var dir=$("#dir");
+        //var tel=$("#telefono");
+        for (var i in consDatAct) {
+            Id.val(consDatAct[i].Id);
+            nom.val(consDatAct[i].Nombre);
+            app.val(consDatAct[i].Apellido_P);
+            apm.val(consDatAct[i].Apellido_M);
+            dir.val(consDatAct[i].Direccion);
+            //tel.val(consDatAct[i].Telefono);
+        }
+    }
+ });
+ 
+ var btnGuarDatos=$("#btnGuarDatos");
+ btnGuarDatos.click(function actual(){
+    var id=parseInt($("#nomActualizar").val());
+    var nombre=$("#nom").val();
+    var app=$("#app").val();
+    var apm=$("#apm").val();
+    var dir=$("#dir").val();
+    //var tel=$("#telefono").val();
+    alert("ok");
+    if (nombre=="" || app=="" || apm=="" || dir=="" ) {
+      //|| tel==""
+        alert("Ingresa información en todos los campos");
+    }else{
+        //alert("texto");
+        $.ajax({
+        
+            type:"POST",
+            url:"http://mobileapp.260mb.net/actualizar.php",
+            data:"id="+id+"&nombre="+nombre+"&apellido_p="+app+"&apellido_m="+apm+"&direccion="+dir,
+            //+"&telefono="+tel,
+            success:actualizacion
+        });
+            
+    }
+     function actualizacion(datos){
+       alert("datos:"+datos);
+    }
+ });
+ 
+
+var btnConsEliminar=$("#btnConsEliminar");
+ btnConsEliminar.click(function conEliminar(){
+
+    $.ajax({
+        type:"POST",
+        url:"http://mobileapp.260mb.net/consultaBD.php",
+        data:"",
+        success: consultaAntEliminar
+    });
+    
+    function consultaAntEliminar(datos) {
+        var datAntEliminar=$.parseJSON(datos);
+        var respConElim=$("#respConElim");
+        dibujarTabla(respConElim,datAntEliminar);
+    }
+ });
+ 
+ var btnEliminar=$("#btnEliminar");
+ btnEliminar.click(function eliminarDato(){
+   var idEliminar=parseInt($("#idEliminar").val());
+   $.ajax({
+    type:"POST",
+    url:"http://mobileapp.260mb.net/eliminar.php",
+    data:"Id="+idEliminar,
+    success:Eliminacion
+   });
+   function Eliminacion(datos) {
+    alert(datos);
+   }
+ });
+ });
+
+ 
+  $(document).ready(function inicio2(){//EMPIEZA FUNCION 2 Pasteles
+
+            
+  var btnGuardar2=$("#guardar2");
+  btnGuardar2.click(function guardar2(){
+  var nombrep=$("#nombrep").val();
+  var tamaño=$("#tamaño").val();
+  alert(tamaño);
+  var precio=$("#precio").val();
+  var sabor=$("#sabor").val();
+    $.ajax({
+    type:"POST",
+    url:"http://mobileapp.260mb.net/guardarDatos1.php",
+    data:"nombrep="+nombrep+"&tam="+tamaño+"&precio="+precio+"&sabor="+sabor,
+    success: registro2
+    });
+    function registro2(datos){
+    alert(datos);
+    }
+  });
+  
+  var btnConsulta22=$("#consultar22");//consultar todos los registros
+  btnConsulta22.click(function cons22(){
+    
+    $.ajax({
+    type:"POST",
+    url:"http://mobileapp.260mb.net/consultaTodosBD.php",
+    data:"",
+    success: consultaDatos22
+    });
+    
+    function consultaDatos22(datos){
+    var respDatos22=$.parseJSON(datos);
+    
+     //alert(datos); 
+    var respuesta22=$("#reconsulta22");
+    dibujarTabla22(respuesta22, respDatos22);    
+    }
+  });
+    function dibujarTabla22(respuesta22, respDatos22) {
+        
+    respuesta22.html("");
+    respuesta22.append('<table id="tab22" border="1">');
+    var tabla22=$("#tab22");
+    tabla22.html("<tr><th>ID</th><th>Nombre_Pastel</th><th>Tamaño</th><th>Precio</th><th>Sabor</th></tr>");
+    for(var x in respDatos22){
+      tabla22.append("<tr><td>"+respDatos22[x].Id_Pastel+"</td>"
+      +"<td>"+respDatos22[x].Nombre_Pastel+"</td>"
+      +"<td>"+respDatos22[x].Tamano+"</td>"
+      +"<td>"+respDatos22[x].Precio+"</td>"
+      +"<td>"+respDatos22[x].Sabor+"</td></tr>");
+    }
+    tabla22.append("</table>");
+    }
+     
+    
+  var btnconsultar3=$("#btnconsultar3");
+  btnconsultar3.click(function cons3(){
+  var valConsulta3=$("#valConsulta3").val();
+    $.ajax({
+      type:"POST",
+      url:"http://mobileapp.260mb.net/consultaUnoBD2.php",
+      data:"Id="+valConsulta3,
+      success: consultaPastel
+    });
+    
+    function consultaPastel(datos){
+        
+    var respDatos3=$.parseJSON(datos);
+    
+    var respuesta3=$("#resconsulta3");
+    
+    dibujarTabla22(respuesta3, respDatos3);
+    }
+  });
+var btnConsAct22=$("#btnConsAct22");
+ btnConsAct22.click(function cargarDat22(){
+   // alert("hola");
+     $.ajax({
+    type:"POST",
+    url:"http://mobileapp.260mb.net/consultaTodosBD.php",
+    data:"",
+    success: cargarDatos22
+    });
+     function cargarDatos22(datos) {
+        var respCarga22=$.parseJSON(datos);
+        var respConAct22=$("#respConAct22");
+        dibujarTabla22(respConAct22,respCarga22);
+     }
+ });
+ 
+ var btnConsAct=$("#btnConsAct");
+ btnConsAct.click(function cargarDat(){
+  $.ajax({
+    type:"POST",
+    url:"http://mobileapp.260mb.net/consultaTodosBD.php",
+    data:"",
+    success: cargarDatos
+  });
+  function cargarDatos(datos) {
+    var respCarga=$.parseJSON(datos);
+    var respConAct=$("#respConAct");
+    dibujarTabla(respConAct, respCarga);
+  }
+ });
+ 
+ var btnCarDatos3=$("#btnCarDatos3");
+
+ btnCarDatos3.click(function cargarInf3(){
+     
+   var Id=parseInt($("#nomActualizar3").val());//nomActualizar--
+    
+    $.ajax({
+    type:"POST",
+    url:"http://mobileapp.260mb.net/consultaUnoBD2.php",
+    data:"Id="+Id,
+    success: cargarDatosAct3
+        });
+    function cargarDatosAct3(datos) {
+        
+        var consDatAct3=$.parseJSON(datos);
+        var respCargDatos3=$("#respCargDatos3");//Div del resultado para dibujar control
+        respCargDatos3.html("<label>ID:</label><input type='text' id='Id' disabled='yes'>");
+        respCargDatos3.append("<label>Nombre_Pastel:</label><input type='text' id='nomp'>");
+        respCargDatos3.append("<label>Tamaño:</label><input type='text' id='tam'>");
+        respCargDatos3.append("<label>Precio:</label><input type='text' id='pre'>");
+         respCargDatos3.append("<label>Sabor:</label><input type='text' id='sab'>");
+          //respCargDatos.append("<label>Telefono:</label><input type='text' id='tel'>");
+       
+        var Id=$("#Id");
+        var nomp=$("#nomp");
+        var tam=$("#tam");
+        var pre=$("#pre");
+        var sab=$("#sab");
+      
+        //var tel=$("#telefono");
+       
+        for (var y in consDatAct3) {
+              //alert("siOno"); 
+            Id.val(consDatAct3[y].Id_Pastel);
+            nomp.val(consDatAct3[y].Nombre_Pastel);
+            tam.val(consDatAct3[y].Tamano);
+            pre.val(consDatAct3[y].Precio);
+            sab.val(consDatAct3[y].Sabor);
+            
+        }
+    }
+ });
+ 
+ var btnGuarDatos3=$("#btnGuarDatos3");
+ 
+ btnGuarDatos3.click(function actual3(){
+   
+    var id=parseInt($("#nomActualizar3").val());
+   
+    var nombre=$("#nomp").val();
+    
+    var tamaño=$("#tam").val();
+     
+    var precio=$("#pre").val();
+    var sabor=$("#sab").val();
+
+    if (nombre=="" || tamaño=="" || precio=="" || sabor=="" ) {
+      
+        alert("Ingresa información en todos los campos");
+    }else{
+        
+        $.ajax({
+        
+            type:"POST",
+            url:"http://mobileapp.260mb.net/actualizarDatosBD.php",
+            data:"id="+id+"&nombrep="+nombre+"&tamano="+tamaño+"&precio="+precio+"&sabor="+sabor,
+            //+"&telefono="+tel,
+            success:actualizacion3
+        });
+            
+    }
+     function actualizacion3(datos){
+       alert("datos:"+datos);
+    }
+ });
+ 
+
+var btnConsEliminar22=$("#btnConsEliminar22");
+
+ btnConsEliminar22.click(function conEliminar22(){
+
+    $.ajax({
+        type:"POST",
+        url:"http://mobileapp.260mb.net/consultaTodosBD.php",
+        data:"",
+        success: consultaAntEliminar22
+    });
+    
+    function consultaAntEliminar22(datos) {
+        
+        var datAntEliminar22=$.parseJSON(datos);
+        var respConElim22=$("#respConElim22");
+        dibujarTabla22(respConElim22,datAntEliminar22);
+    }
+ });
+ 
+ var btnEliminar22=$("#btnEliminar22");
+ btnEliminar22.click(function eliminarDato22(){
+   var idEliminar1=parseInt($("#idEliminar1").val());
+   $.ajax({
+    type:"POST",
+    url:"http://mobileapp.260mb.net/eliminarP.php",
+    data:"Id="+idEliminar1,
+    success:Eliminacion22
+   });
+   function Eliminacion22(datos) {
+    alert(datos);
+   }
+ });
+ });
+
+ 
+ 
+ 
+
+ 
+
+</script>
+<style type="text/css">
+p{
+text-align:center;
+}
+</style>
+</head>
+<body>
+  
+  <div data-role="page" id="principal" data-theme="b">
+    <div data-role="header">
+        <p>PASTELERIA LIHERM</p>
+</div>
+   <div data-role="content">
+   <p>Contenido</p>
+<a href="#Pagina2" data-role="button" data-transition="pop"> CLIENTE</a>
+<a href="#Pagina3" data-role="button" data-transition="pop"> PASTELES</a>
+
+</div>
+<div data-role="footer">
+</div>
+</div>
+  
+      
+</div>
+
+<div data-role="page" id="Pagina2">
+  <div data-role="header" >
+   
+    <p>Datos del Cliente</p>
+  </div>
+  <div data-role="content">
+    <div>
+      <ul data-role="listview">
+	<li><a href="#registro" >Registrar</a></li>
+	<li><a href="#consulta" >Consultar todos los clientes</a></li>
+	<li><a href="#consulta2" >Consultar un cliente</a></li>
+        <li><a href="#actualizar" >Actualizar</a></li>
+        <li><a href="#eliminar" >Eliminar</a></li>
+      </ul>
+    </div>
+  </div>
+  <div data-role="footer">
+  <p>Derechos reservados</p>
+  </div>
+</div>
+<div data-role="page" id="registro">
+  <div data-role="header" >
+    <p>registrar datos</p>
+  </div>
+  <div data-role="content">
+    <label for="nombre">Nombre:</label>
+    <input type="text" id="nombre">
+    <label for="apellidop">Apellido Paterno:</label>
+    <input type="text" id="ap">
+    <label for="apellidom">Apellido Materno:</label>
+    <input type="text" id="am">
+    <label for="direccion">Direccion:</label>
+    <input type="text" id="di">
+    
+<input type="button" id="guardar" value="Guardar">
+  </div>
+  <div data-role="footer">
+  <p>Derechos reservados</p>
+  </div>
+</div>
+<div data-role="page" id="consulta">
+  <div data-role="header" >
+    <p>Consultar todos los clientes</p>
+  </div>
+  <div data-role="content">
+    <input type="button" id="consultar" value="Consultar">
+    <div id="resconsulta"></div>
+  </div>
+  <div data-role="footer">
+  <p>Derechos reservados</p>
+  </div>
+</div>
+<div data-role="page" id="consulta2">
+  <div data-role="header" >
+    <p>Consultar cliente</p>
+  </div>
+  <div data-role="content">
+    <label for="valConsulta">Id:</label>
+    <input type="text" id="valConsulta" >
+    <input type="button" id="btnconsultar2" value="Consultar">
+    <div id="resconsulta2"></div>
+  </div>
+  <div data-role="footer">
+  <p>Derechos reservados</p>
+  </div>
+</div>
+<div data-role="page" id="actualizar">
+  <div data-role="header" >
+    <p>Actualizar registros</p>
+  </div>
+  <div data-role="content">
+    <input type="button" id="btnConsAct" value="Mostrar todos los registros">
+        <div id="respConAct"></div>
+        <label for="nomActualizar">ID a actualizar</label>
+        <input type="text" id="nomActualizar">
+        <input type="button" id="btnCarDatos" value="Cargar Datos">
+            <div id="respCargDatos"></div>
+        <input type="button" id="btnGuarDatos" value="Guardar Datos"> 
+  </div>
+  <div data-role="footer">
+  <p>Derechos reservados</p>
+  </div>
+</div>
+<div data-role="page" id="eliminar">
+  <div data-role="header" >
+    <p>Eliminar registros</p>
+  </div>
+  <div data-role="content">
+    <input type="button" id="btnConsEliminar" value="Mostrar todos los registros" />
+        <div id="respConElim"></div>
+        <label for="idEliminar">ID a Eliminar</label>
+        <input type="text" id="idEliminar">
+        <input type="button" id="btnEliminar" value="Eliminar registro" >
+  </div>
+  <div data-role="footer">
+  <p>Derechos reservados</p>
+  </div>
+</div>
+
+<div data-role="page" id="Pagina3">
+  <div data-role="header" >
+    <a href="#principal" data-role="button" data-transition="fade" data-add-back-btn="true" data-icon="home">Regresar</a>
+    <p>Datos del Cliente</p>
+  </div>
+  <div data-role="content">
+    <div>
+      <ul data-role="listview">
+	<li><a href="#registro" >Registrar</a></li>
+	<li><a href="#consulta" >Consultar todos los clientes</a></li>
+	<li><a href="#consulta2" >Consultar un cliente</a></li>
+        <li><a href="#actualizar" >Actualizar</a></li>
+        <li><a href="#eliminar" >Eliminar</a></li>
+      </ul>
+    </div>
+  </div>
+  <div data-role="footer">
+  <p>Derechos reservados</p>
+  </div>
+</div>
+
+
+
+
+<div data-role="page" id="Pagina3">
+  <div data-role="header" >
+    <p>PASTELES</p>
+  </div>
+  <div data-role="content">
+    <div>
+      <ul data-role="listview">
+	<li><a href="#registro2" >Registrar inventario</a></li>
+	<li><a href="#consulta22" >Consultar todo el inventario</a></li>
+	<li><a href="#consulta3" >Consultar un inventario</a></li>
+        <li><a href="#actualizar2" >Actualizar inventario</a></li>
+        <li><a href="#eliminar2" >Eliminar</a></li>
+      </ul>
+    </div>
+  </div>
+  <div data-role="footer">
+  <p>Derechos reservados</p>
+  </div>
+</div>
+
+
+<div data-role="page" id="registro2">
+  <div data-role="header">
+    <p>Registrar Pastel</p>
+  </div>
+  <div data-role="content">
+    <label for="nombre">Nombre del Pastel:</label>
+    <input type="text" id="nombrep">
+      <label for="tamaño">Tamaño:</label>
+      <input type="text" id="tamaño">
+        <label for="precio">Precio:</label>
+        <input type="text" id="precio">
+          <label for="sabor">Sabor:</label>
+        <input type="text" id="sabor">
+          <input type="button" id="guardar2" value="Guardar">
+  </div>
+  <div data-role="footer">
+    <p>Derechos Reservados</p>
+  </div>
+</div>
+
+<div data-role="page" id="consulta22">
+  <div data-role="header">
+    <p>Consultar todo el inventario de Pasteles</p>
+</div>
+  <div data-role="content">
+    <input type="button" id="consultar22" value="Consultar"> 
+      <div id="reconsulta22"></div>
+  </div>
+  <div data-role="footer">
+    <p>Derechos Revisado</p>
+  </div>
+</div>
+
+
+  <div data-role=page" id=consulta3>
+    <div data-rolee="header">
+      <p>Consultar inventario</p>
+    </div>
+    <div data-role="content">
+      <label for=valConsulta3>Id de Pastel:</label>
+      <input type="text" id="valConsulta3" >
+      <input type="button" id="btnconsultar3" value="Consultar">
+      <div id="resconsulta3"></div>
+     </div>
+  <div data-role="footer">
+  <p>Derechos reservados</p>
+  </div>
+</div>
+  
+  
+  <div data-role="page" id="actualizar2">
+  <div data-role="header" >
+    <p>Actualizar registros de inventario</p>
+  </div>
+  <div data-role="content">
+    <input type="button" id="btnConsAct22" value="Mostrar registros">
+        <div id="respConAct22"></div>
+        <label for="nomActualizar3">ID pastel</label>
+        <input type="text" id="nomActualizar3">
+        <input type="button" id="btnCarDatos3" value="Cargar Datos">
+            <div id="respCargDatos3"></div>
+        <input type="button" id="btnGuarDatos3" value="Guardar Datos"> 
+  </div>
+  <div data-role="footer">
+  <p>Derechos reservados</p>
+  </div>
+</div>
+
+
+
+<div data-role="page" id="eliminar2">
+  <div data-role="header" >
+    <p>Eliminar registros </p>
+  </div>
+  <div data-role="content">
+    <input type="button" id="btnConsEliminar22" value="Mostrar todo el inventario">
+        <div id="respConElim22"></div>
+        <label for="idEliminar22">ID a Eliminar </label>
+        <input type="text" id="idEliminar1">
+        
+        <input type="button" id="btnEliminar22" value="Eliminar un registro"> 
+  </div>
+  <div data-role="footer">
+  <p>Derechos reservados</p>
+
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+</body>
+</html>
